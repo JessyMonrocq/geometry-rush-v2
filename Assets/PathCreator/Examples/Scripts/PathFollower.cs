@@ -12,7 +12,9 @@ namespace PathCreation.Examples
         public PathCreator pathCreator;
         public EndOfPathInstruction endOfPathInstruction;
         public float speed = 5;
+        public float rotateSpeed = 20.0f;
         float distanceTravelled;
+        public bool isGrounded;
 
         public Rigidbody rb;
 
@@ -34,16 +36,24 @@ namespace PathCreation.Examples
                 //transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
                 transform.position = new Vector3( pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction).x, this.transform.position.y,pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction).z);
                 
-                transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+                //transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
             }
-
-            if (Input.GetButtonDown("Jump")) {
+            
+            if (Input.GetButton("Jump") && isGrounded) {
+                isGrounded = false;
                 rb.AddForce(Vector3.up, ForceMode.Impulse);
             }
         }
 
         void FixedUpdate() {
             rb.AddForce(Physics.gravity * (gravityScale - 1) * rb.mass);
+
+            if (!isGrounded)
+            {
+                transform.Rotate(0,0,rotateSpeed*Time.deltaTime);
+            } else {
+                transform.Rotate(0,0,0);
+            }
         }
 
         // If the path changes during the game, update the distance travelled so that the follower's position on the new path
@@ -60,7 +70,13 @@ namespace PathCreation.Examples
                 rend.enabled = false;
                 //rb.GetComponent<PathFollower>().enabled = false;
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            }    
+            } else {
+                isGrounded = true;
+            }
+        }
+        
+        void OnCollisionExit(Collision other) {
+            isGrounded = false;    
         }
     }
 }
