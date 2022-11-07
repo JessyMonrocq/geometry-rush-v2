@@ -12,9 +12,10 @@ namespace PathCreation.Examples
         public PathCreator pathCreator;
         public EndOfPathInstruction endOfPathInstruction;
         public float speed = 5;
-        public float rotateSpeed = 20.0f;
         float distanceTravelled;
         public bool isGrounded;
+        public float rot;
+        public float rotOffset;
 
         public Rigidbody rb;
 
@@ -26,6 +27,8 @@ namespace PathCreation.Examples
                 // Subscribed to the pathUpdated event so that we're notified if the path changes during the game
                 pathCreator.pathUpdated += OnPathChanged;
             }
+
+            rb.maxDepenetrationVelocity = 1;
         }
 
         void Update()
@@ -35,8 +38,13 @@ namespace PathCreation.Examples
                 distanceTravelled += speed * Time.deltaTime;
                 //transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
                 transform.position = new Vector3( pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction).x, this.transform.position.y,pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction).z);
-                
-                //transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+
+                if(isGrounded)
+                {
+                    transform.rotation = Quaternion.Euler(0, 0, 0);
+                    rot = 0;
+                }
+            
             }
             
             if (Input.GetButton("Jump") && isGrounded) {
@@ -48,11 +56,10 @@ namespace PathCreation.Examples
         void FixedUpdate() {
             rb.AddForce(Physics.gravity * (gravityScale - 1) * rb.mass);
 
-            if (!isGrounded)
+            if (!isGrounded) 
             {
-                transform.Rotate(0,0,rotateSpeed*Time.deltaTime);
-            } else {
-                transform.Rotate(0,0,0);
+                transform.rotation = Quaternion.Euler(0, 0, rot);
+                rot += rotOffset;
             }
         }
 
