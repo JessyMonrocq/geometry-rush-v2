@@ -13,13 +13,17 @@ namespace PathCreation.Examples
         public EndOfPathInstruction endOfPathInstruction;
         public float speed = 5;
         float distanceTravelled;
+
         public bool isGrounded;
+
         public float rot;
         public float rotOffset;
 
         public Rigidbody rb;
 
+        public float jumpAmount = 7;
         public float gravityScale = 5;
+        float jumpForce; 
 
         void Start() {
             if (pathCreator != null)
@@ -29,38 +33,36 @@ namespace PathCreation.Examples
             }
 
             rb.maxDepenetrationVelocity = 1;
+            
         }
 
         void Update()
         {
+            jumpForce = Mathf.Sqrt(jumpAmount * -2 * (Physics.gravity.y * gravityScale));
+
             if (pathCreator != null)
             {
                 distanceTravelled += speed * Time.deltaTime;
                 //transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
                 transform.position = new Vector3( pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction).x, this.transform.position.y,pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction).z);
-
-                if(isGrounded)
-                {
-                    transform.rotation = Quaternion.Euler(0, 0, 0);
-                    rot = 0;
-                }
             
             }
             
             if (Input.GetButton("Jump") && isGrounded) {
                 isGrounded = false;
-                rb.AddForce(Vector3.up, ForceMode.Impulse);
+                //rb.AddForce(Vector3.up * jumpAmount, ForceMode.Impulse);
+                rb.AddForce(new Vector2(0, jumpForce), ForceMode.Impulse);
+            }
+
+            if (!isGrounded)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, rot);
+                rot += rotOffset;
             }
         }
 
         void FixedUpdate() {
             rb.AddForce(Physics.gravity * (gravityScale - 1) * rb.mass);
-
-            if (!isGrounded) 
-            {
-                transform.rotation = Quaternion.Euler(0, 0, rot);
-                rot += rotOffset;
-            }
         }
 
         // If the path changes during the game, update the distance travelled so that the follower's position on the new path
@@ -78,6 +80,8 @@ namespace PathCreation.Examples
                 //rb.GetComponent<PathFollower>().enabled = false;
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             } else {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+                rot = 0;
                 isGrounded = true;
             }
         }
