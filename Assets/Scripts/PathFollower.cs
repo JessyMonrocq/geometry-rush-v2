@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace PathCreation.Examples
 {
@@ -23,7 +24,10 @@ namespace PathCreation.Examples
 
         public float jumpAmount = 7;
         public float gravityScale = 5;
-        float jumpForce; 
+        float jumpForce;
+
+        public Text nb;
+        private int nbEssais = 1;
 
         void Start() {
             if (pathCreator != null)
@@ -75,10 +79,11 @@ namespace PathCreation.Examples
             if (other.gameObject.name == "Spike")
             {
                 Debug.Log ("Touché");
-                var rend = rb.GetComponent<Renderer>();
-                rend.enabled = false;
-                //rb.GetComponent<PathFollower>().enabled = false;
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                distanceTravelled = 0.1f;
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+                transform.position = new Vector3(0, 0.75f, 0);
+                nbEssais++;
+                nb.text = nbEssais.ToString();
             } else {
                 transform.rotation = Quaternion.Euler(0, 0, 0);
                 rot = 0;
