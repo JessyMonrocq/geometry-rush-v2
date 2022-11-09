@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 namespace PathCreation.Examples
 {
@@ -26,7 +27,7 @@ namespace PathCreation.Examples
         public float gravityScale = 5;
         float jumpForce;
 
-        public Text nb;
+        public TextMeshPro nb;
         private int nbEssais = 1;
 
         void Start() {
