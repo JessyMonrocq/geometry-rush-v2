@@ -32,6 +32,11 @@ namespace PathCreation.Examples
         public TextMeshPro nb;
         private int nbEssais = 1;
 
+        public GameObject rightController;
+        public GameObject leftController;
+        public GameObject pauseMenu;
+        public GameObject essaisUI;
+
         void Start() {
             if (pathCreator != null)
             {
@@ -41,6 +46,15 @@ namespace PathCreation.Examples
 
             rb.maxDepenetrationVelocity = 1;
             
+        }
+
+        public void PauseMenuDown()
+        {
+            essaisUI.SetActive(true);
+            pauseMenu.SetActive(false);
+            rightController.SetActive(false);
+            leftController.SetActive(false);
+            Time.timeScale = 1;
         }
 
         void Update()
@@ -55,10 +69,19 @@ namespace PathCreation.Examples
             
             }
             
-            if (Input.GetButton("Jump") && isGrounded) {
+            if (Input.GetButton("Jump") && isGrounded && Time.timeScale == 1) {
                 isGrounded = false;
                 //rb.AddForce(Vector3.up * jumpAmount, ForceMode.Impulse);
                 rb.AddForce(new Vector2(0, jumpForce), ForceMode.Impulse);
+            }
+
+            if (Input.GetButton("Pause") && Time.timeScale == 1)
+            {
+                essaisUI.SetActive(false);
+                pauseMenu.SetActive(true);
+                rightController.SetActive(true);
+                leftController.SetActive(true);
+                Time.timeScale = 0;             
             }
 
             if (!isGrounded)
@@ -93,7 +116,6 @@ namespace PathCreation.Examples
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Touché");
             Death.SetActive(true);
             Death.GetComponent<ParticleSystem>().Play();
             var rend = rb.GetComponent<Renderer>();
