@@ -26,6 +26,8 @@ namespace PathCreation.Examples
         public float jumpAmount = 7;
         public float gravityScale = 5;
         float jumpForce;
+        public GameObject particles;
+        public GameObject Death;
 
         public TextMeshPro nb;
         private int nbEssais = 1;
@@ -63,6 +65,13 @@ namespace PathCreation.Examples
             {
                 transform.rotation = Quaternion.Euler(0, 0, rot);
                 rot += rotOffset;
+                particles.SetActive(false);
+            }
+            else
+            {
+                particles.SetActive(true);
+
+
             }
         }
 
@@ -77,21 +86,27 @@ namespace PathCreation.Examples
         }
 
         void OnCollisionEnter(Collision other) {
-            if (other.gameObject.name == "Spike")
-            {
-                Debug.Log ("Touché");
-                distanceTravelled = 0.1f;
-                transform.rotation = Quaternion.Euler(0, 0, 0);
-                transform.position = new Vector3(0, 0.75f, 0);
-                nbEssais++;
-                nb.text = nbEssais.ToString();
-            } else {
-                transform.rotation = Quaternion.Euler(0, 0, 0);
-                rot = 0;
-                isGrounded = true;
-            }
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+            rot = 0;
+            isGrounded = true;
         }
-        
+
+        private void OnTriggerEnter(Collider other)
+        {
+            Debug.Log("Touché");
+            Death.SetActive(true);
+            Death.GetComponent<ParticleSystem>().Play();
+            var rend = rb.GetComponent<Renderer>();
+            rend.enabled = false;
+            nbEssais++;
+            nb.text = nbEssais.ToString();
+            distanceTravelled = 0.1f;
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+            transform.position = new Vector3(0, 0.75f, 0);
+            //rb.GetComponent<PathFollower>().enabled = false;
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
         void OnCollisionExit(Collision other) {
             isGrounded = false;    
         }
