@@ -36,8 +36,10 @@ namespace PathCreation.Examples
         public GameObject leftController;
         public GameObject pauseMenu;
         public GameObject essaisUI;
+        public GameObject audioSync;
 
         void Start() {
+            pathCreator = PathCreator.FindObjectOfType<PathCreator>();
             if (pathCreator != null)
             {
                 // Subscribed to the pathUpdated event so that we're notified if the path changes during the game
@@ -114,17 +116,25 @@ namespace PathCreation.Examples
             isGrounded = true;
         }
 
-        private void OnTriggerEnter(Collider other)
+        private IEnumerator OnTriggerEnter(Collider other)
         {
             Death.SetActive(true);
             Death.GetComponent<ParticleSystem>().Play();
-            var rend = rb.GetComponent<Renderer>();
+            particles.SetActive(false);
+            pathCreator = null;
+            var rend = this.gameObject.GetComponent<Renderer>();
             rend.enabled = false;
+            audioSync.SetActive(false);
             nbEssais++;
+            yield return new WaitForSeconds(2);
+            rend.enabled = true;
+            particles.SetActive(true);
+            pathCreator = PathCreator.FindObjectOfType<PathCreator>();
             nb.text = nbEssais.ToString();
             distanceTravelled = 0.1f;
             transform.rotation = Quaternion.Euler(0, 0, 0);
             transform.position = new Vector3(0, 0.75f, 0);
+            audioSync.SetActive(true);
             //rb.GetComponent<PathFollower>().enabled = false;
             //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
