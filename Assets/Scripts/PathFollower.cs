@@ -25,9 +25,10 @@ namespace PathCreation.Examples
 
         public float jumpAmount = 7;
         public float gravityScale = 5;
-        float jumpForce;
+        public float jumpForce;
         public GameObject particles;
         public GameObject Death;
+        public GameObject SpaceShip;
 
         public TextMeshPro nb;
         private int nbEssais = 1;
@@ -38,7 +39,11 @@ namespace PathCreation.Examples
         public GameObject essaisUI;
         public GameObject audioSync;
 
-        void Start() {
+        void Start() { 
+            SpaceShip.SetActive(false);
+            rb.mass = 0.075f;
+            Physics.gravity = new Vector3(0, -9.81F, 0);
+
             pathCreator = PathCreator.FindObjectOfType<PathCreator>();
             if (pathCreator != null)
             {
@@ -78,8 +83,15 @@ namespace PathCreation.Examples
             }
             
             if (Input.GetButton("Jump") && isGrounded && Time.timeScale == 1) {
-                isGrounded = false;
-                //rb.AddForce(Vector3.up * jumpAmount, ForceMode.Impulse);
+                if (transform.position.x < -20)
+                {
+                    rb.mass = 0.07f;
+                    jumpAmount = 0.0001f;
+                    isGrounded = true;
+                } else
+                {
+                    isGrounded = false;
+                }
                 rb.AddForce(new Vector2(0, jumpForce), ForceMode.Impulse);
             }
 
@@ -93,16 +105,27 @@ namespace PathCreation.Examples
                 Time.timeScale = 0;             
             }
 
-            if (!isGrounded)
+            if (!isGrounded && transform.position.x >= -20)
             {
                 transform.rotation = Quaternion.Euler(0, 0, rot);
                 rot += rotOffset;
-                particles.SetActive(false);
             }
-            else
+
+            if (transform.position.x >= -20)
             {
+                if (isGrounded)
+                {
+                    particles.SetActive(true);
+                } else
+                {
+                    particles.SetActive(false);
+                }
+            } else
+            {
+                SpaceShip.SetActive(true);
                 particles.SetActive(true);
             }
+
         }
 
         void FixedUpdate() {
@@ -135,6 +158,7 @@ namespace PathCreation.Examples
             audioSync.SetActive(false);
             this.GetComponentInChildren<AudioSource>().Play(0);
             nbEssais++;
+            SpaceShip.SetActive(false);
             yield return new WaitForSeconds(2);
             rend.enabled = true;
             collider.enabled = true;
@@ -150,7 +174,14 @@ namespace PathCreation.Examples
         }
 
         void OnCollisionExit(Collision other) {
-            isGrounded = false;    
+            if (transform.position.x < -20)
+            {
+                isGrounded = true;
+            }
+            else
+            {
+                isGrounded = false;
+            }
         }
     }
 }
