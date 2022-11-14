@@ -57,6 +57,12 @@ namespace PathCreation.Examples
             rightController.SetActive(false);
             leftController.SetActive(false);
             Time.timeScale = 1;
+            audioSync.GetComponent<AudioSource>().Play(0);
+        }
+
+        public void PauseMenuBack()
+        {
+            SceneManager.LoadScene("MainMenu");
         }
 
         void Update()
@@ -79,6 +85,7 @@ namespace PathCreation.Examples
 
             if (Input.GetButton("Pause") && Time.timeScale == 1)
             {
+                audioSync.GetComponent<AudioSource>().Pause();
                 essaisUI.SetActive(false);
                 pauseMenu.SetActive(true);
                 rightController.SetActive(true);
@@ -95,8 +102,6 @@ namespace PathCreation.Examples
             else
             {
                 particles.SetActive(true);
-
-
             }
         }
 
@@ -120,20 +125,25 @@ namespace PathCreation.Examples
         {
             Death.SetActive(true);
             Death.GetComponent<ParticleSystem>().Play();
-            particles.SetActive(false);
             pathCreator = null;
             var rend = this.gameObject.GetComponent<Renderer>();
+            var collider = this.gameObject.GetComponent<BoxCollider>();
+            var rigidbody = this.gameObject.GetComponent<Rigidbody>();
             rend.enabled = false;
+            collider.enabled = false;
+            rigidbody.constraints = RigidbodyConstraints.FreezePosition;
             audioSync.SetActive(false);
+            this.GetComponentInChildren<AudioSource>().Play(0);
             nbEssais++;
             yield return new WaitForSeconds(2);
             rend.enabled = true;
-            particles.SetActive(true);
+            collider.enabled = true;
+            rigidbody.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
             pathCreator = PathCreator.FindObjectOfType<PathCreator>();
             nb.text = nbEssais.ToString();
             distanceTravelled = 0.1f;
             transform.rotation = Quaternion.Euler(0, 0, 0);
-            transform.position = new Vector3(0, 0.75f, 0);
+            transform.position = new Vector3(100, 0.75f, 0);
             audioSync.SetActive(true);
             //rb.GetComponent<PathFollower>().enabled = false;
             //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
