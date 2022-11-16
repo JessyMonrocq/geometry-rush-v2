@@ -6,6 +6,7 @@ public class FollowPlayer : MonoBehaviour
 {
     public GameObject target;
     public float offsetX;
+    public float offsetY;
     public float offsetZ;
 
     // Start is called before the first frame update
@@ -17,6 +18,6 @@ public class FollowPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = new Vector3(target.transform.position.x + offsetX, 2, offsetZ);
+        transform.position = new Vector3(target.transform.position.x + offsetX, offsetY, offsetZ);
     }
 }

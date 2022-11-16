@@ -39,10 +39,15 @@ namespace PathCreation.Examples
         public GameObject essaisUI;
         public GameObject audioSync;
 
+        //public Light sun;
+        //public Skybox skybox;
+
         void Start() { 
             SpaceShip.SetActive(false);
             rb.mass = 0.075f;
             Physics.gravity = new Vector3(0, -9.81F, 0);
+            //sun.color = Color.blue;
+            //RenderSettings.skybox.SetColor("_Tint",Color.blue);
 
             pathCreator = PathCreator.FindObjectOfType<PathCreator>();
             if (pathCreator != null)
@@ -83,7 +88,7 @@ namespace PathCreation.Examples
             }
             
             if (Input.GetButton("Jump") && isGrounded && Time.timeScale == 1) {
-                if (transform.position.x < -20)
+                if (transform.position.x < -140)
                 {
                     rb.mass = 0.07f;
                     jumpAmount = 0.0001f;
@@ -105,13 +110,13 @@ namespace PathCreation.Examples
                 Time.timeScale = 0;             
             }
 
-            if (!isGrounded && transform.position.x >= -20)
+            if (!isGrounded && transform.position.x >= -140)
             {
                 transform.rotation = Quaternion.Euler(0, 0, rot);
                 rot += rotOffset;
             }
 
-            if (transform.position.x >= -20)
+            if (transform.position.x >= -140)
             {
                 if (isGrounded)
                 {
@@ -125,6 +130,13 @@ namespace PathCreation.Examples
                 SpaceShip.SetActive(true);
                 particles.SetActive(true);
             }
+
+            /*if (transform.position.x < -25)
+            {
+                Color sunColor = sun.color;
+                sun.color = Color.Lerp(sunColor, Color.red, Mathf.PingPong(Time.time, 150));
+                RenderSettings.skybox.SetColor("_Tint", Color.Lerp(sunColor, Color.red, Mathf.PingPong(Time.time, 150)));
+            }*/
 
         }
 
@@ -174,7 +186,7 @@ namespace PathCreation.Examples
         }
 
         void OnCollisionExit(Collision other) {
-            if (transform.position.x < -20)
+            if (transform.position.x < -140)
             {
                 isGrounded = true;
             }
