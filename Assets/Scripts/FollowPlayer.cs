@@ -9,7 +9,6 @@ public class FollowPlayer : MonoBehaviour
     public float offsetX;
     public float offsetY;
     public float offsetZ;
-    private bool moveCam = false;
 
     // Start is called before the first frame update
     void Start()
