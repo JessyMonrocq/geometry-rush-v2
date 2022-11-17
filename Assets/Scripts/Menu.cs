@@ -10,6 +10,9 @@ public class Menu : MonoBehaviour
     private float rotY = 180;
     public float rotOffset = 0.05f;
 
+    public AudioSource play;
+    public AudioSource quit;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,13 +26,17 @@ public class Menu : MonoBehaviour
         rotY += rotOffset;
     }
 
-    public void Play()
+    public IEnumerator Play()
     {
+        play.Play(0);
+        yield return new WaitForSeconds(2);
         SceneManager.LoadScene("MainLevel");
     }
 
-    public void CloseGame()
+    public IEnumerator CloseGame()
     {
+        quit.Play(0);
+        yield return new WaitForSeconds(2);
         Application.Quit();
     }
 }

@@ -36,13 +36,25 @@ namespace PathCreation.Examples
         public GameObject rightController;
         public GameObject leftController;
         public GameObject pauseMenu;
+        public GameObject continuer;
+        public GameObject retour;
         public GameObject essaisUI;
         public GameObject audioSync;
 
-        void Start() { 
+        public float endSpeed = 40f;
+        public bool goToEndPoint = false;
+        public bool fini;
+
+        public GameObject endPoint;
+        public Vector3 GoToEndVector;
+        public GameObject menuFin;
+
+        void Start() {
+            fini = false;
             SpaceShip.SetActive(false);
             rb.mass = 0.075f;
             Physics.gravity = new Vector3(0, -9.81F, 0);
+            menuFin.SetActive(false);
 
             pathCreator = PathCreator.FindObjectOfType<PathCreator>();
             if (pathCreator != null)
@@ -54,8 +66,10 @@ namespace PathCreation.Examples
             
         }
 
-        public void PauseMenuDown()
+        public IEnumerator PauseMenuDown()
         {
+            continuer.GetComponent<AudioSource>().Play(0);
+            yield return new WaitForSeconds(2);
             essaisUI.SetActive(true);
             pauseMenu.SetActive(false);
             rightController.SetActive(false);
@@ -64,8 +78,10 @@ namespace PathCreation.Examples
             audioSync.GetComponent<AudioSource>().Play(0);
         }
 
-        public void PauseMenuBack()
+        public IEnumerator PauseMenuBack()
         {
+            retour.GetComponent<AudioSource>().Play(0);
+            yield return new WaitForSeconds(2);
             SceneManager.LoadScene("MainMenu");
         }
 
@@ -103,6 +119,7 @@ namespace PathCreation.Examples
                 audioSync.GetComponent<AudioSource>().Pause();
                 essaisUI.SetActive(false);
                 pauseMenu.SetActive(true);
+                pauseMenu.GetComponent<AudioSource>().Play(0);
                 rightController.SetActive(true);
                 leftController.SetActive(true);
                 Time.timeScale = 0;             
@@ -130,6 +147,19 @@ namespace PathCreation.Examples
                 particles.SetActive(true);
             }
 
+            if (goToEndPoint)
+            {
+                Rigidbody rb = GetComponent<Rigidbody>();
+                rb.MovePosition(this.transform.position + Time.deltaTime * GoToEndVector * endSpeed);
+
+                // this.transform.position += Time.deltaTime * GoToEndVector;
+
+                endSpeed += Time.deltaTime;
+                // fais aller le cube dans la direction calculée
+                // accélère
+                return;
+            }
+
         }
 
         void FixedUpdate() {
@@ -139,10 +169,19 @@ namespace PathCreation.Examples
         // If the path changes during the game, update the distance travelled so that the follower's position on the new path
         // is as close as possible to its position on the old path
         void OnPathChanged() {
+            if(goToEndPoint)
+            {
+                return;
+            }
             distanceTravelled = pathCreator.path.GetClosestDistanceAlongPath(transform.position);
         }
 
         void OnCollisionEnter(Collision other) {
+            if (goToEndPoint)
+            {
+                return;
+            }
+
             transform.rotation = Quaternion.Euler(0, 0, 0);
             rot = 0;
             isGrounded = true;
@@ -150,34 +189,71 @@ namespace PathCreation.Examples
 
         private IEnumerator OnTriggerEnter(Collider other)
         {
-            Death.SetActive(true);
-            Death.GetComponent<ParticleSystem>().Play();
-            pathCreator = null;
-            var rend = this.gameObject.GetComponent<Renderer>();
-            var collider = this.gameObject.GetComponent<BoxCollider>();
-            var rigidbody = this.gameObject.GetComponent<Rigidbody>();
-            rend.enabled = false;
-            collider.enabled = false;
-            rigidbody.constraints = RigidbodyConstraints.FreezePosition;
-            audioSync.SetActive(false);
-            this.GetComponentInChildren<AudioSource>().Play(0);
-            nbEssais++;
-            SpaceShip.SetActive(false);
-            yield return new WaitForSeconds(2);
-            rend.enabled = true;
-            collider.enabled = true;
-            rigidbody.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
-            pathCreator = PathCreator.FindObjectOfType<PathCreator>();
-            nb.text = nbEssais.ToString();
-            distanceTravelled = 0.1f;
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-            transform.position = new Vector3(100, 0.75f, 0);
-            audioSync.SetActive(true);
-            //rb.GetComponent<PathFollower>().enabled = false;
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (other.tag == "endPoint")
+            {
+                Vector3 xCube = gameObject.transform.position;
+                Vector3 xEnd = endPoint.transform.position;
+
+                //calcul le vecteur direction
+                GoToEndVector = xEnd - xCube;
+
+                Debug.Log(GoToEndVector);
+
+                GoToEndVector.Normalize();
+                //normalise le vecteur
+                goToEndPoint = true;
+                this.GetComponent<Rigidbody>().useGravity = false;
+                this.GetComponent<Rigidbody>().isKinematic = true;
+
+                fini = true;
+                endPoint.GetComponent<AudioSource>().PlayDelayed(1);
+            }
+            else
+            {
+                Death.SetActive(true);
+                Death.GetComponent<ParticleSystem>().Play();
+                pathCreator = null;
+                var rend = this.gameObject.GetComponent<Renderer>();
+                var collider = this.gameObject.GetComponent<BoxCollider>();
+                var rigidbody = this.gameObject.GetComponent<Rigidbody>();
+                rend.enabled = false;
+                collider.enabled = false;
+                rigidbody.constraints = RigidbodyConstraints.FreezePosition;
+                audioSync.SetActive(false);
+                nbEssais++;
+                SpaceShip.SetActive(false);
+                if(fini)
+                {
+                    yield return new WaitForSeconds(3);
+                    menuFin.SetActive(true);
+                    menuFin.GetComponent<AudioSource>().Play(0);
+                    yield return new WaitForSeconds(4);
+                    SceneManager.LoadScene("MainMenu");
+                } else
+                {
+                    this.GetComponentInChildren<AudioSource>().Play(0);
+                    yield return new WaitForSeconds(2);
+                    rend.enabled = true;
+                    collider.enabled = true;
+                    rigidbody.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
+                    pathCreator = PathCreator.FindObjectOfType<PathCreator>();
+                    nb.text = nbEssais.ToString();
+                    distanceTravelled = 0.1f;
+                    transform.rotation = Quaternion.Euler(0, 0, 0);
+                    transform.position = new Vector3(100, 0.75f, 0);
+                    audioSync.SetActive(true);
+                    //rb.GetComponent<PathFollower>().enabled = false;
+                    //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                }
+            }
         }
 
         void OnCollisionExit(Collision other) {
+            if (goToEndPoint)
+            {
+                return;
+            }
+
             if (transform.position.x < -160 && transform.position.x > -440)
             {
                 isGrounded = true;
