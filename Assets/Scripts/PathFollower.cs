@@ -13,7 +13,7 @@ namespace PathCreation.Examples
     {
         public PathCreator pathCreator;
         public EndOfPathInstruction endOfPathInstruction;
-        public float speed = 5;
+        public float speed;
         float distanceTravelled;
 
         public bool isGrounded;
@@ -23,7 +23,7 @@ namespace PathCreation.Examples
 
         public Rigidbody rb;
 
-        public float jumpAmount = 7;
+        public float jumpAmount;
         public float gravityScale = 5;
         public float jumpForce;
         public GameObject particles;
@@ -39,20 +39,14 @@ namespace PathCreation.Examples
         public GameObject essaisUI;
         public GameObject audioSync;
 
-        //public Light sun;
-        //public Skybox skybox;
-
         void Start() { 
             SpaceShip.SetActive(false);
             rb.mass = 0.075f;
             Physics.gravity = new Vector3(0, -9.81F, 0);
-            //sun.color = Color.blue;
-            //RenderSettings.skybox.SetColor("_Tint",Color.blue);
 
             pathCreator = PathCreator.FindObjectOfType<PathCreator>();
             if (pathCreator != null)
             {
-                // Subscribed to the pathUpdated event so that we're notified if the path changes during the game
                 pathCreator.pathUpdated += OnPathChanged;
             }
 
@@ -88,13 +82,17 @@ namespace PathCreation.Examples
             }
             
             if (Input.GetButton("Jump") && isGrounded && Time.timeScale == 1) {
-                if (transform.position.x < -140)
+                if (transform.position.x < -160 && transform.position.x > -440)
                 {
+                    speed = 10;
                     rb.mass = 0.07f;
                     jumpAmount = 0.0001f;
                     isGrounded = true;
                 } else
                 {
+                    speed = 7;
+                    rb.mass = 0.075f;
+                    jumpAmount = 0.025f;
                     isGrounded = false;
                 }
                 rb.AddForce(new Vector2(0, jumpForce), ForceMode.Impulse);
@@ -110,14 +108,15 @@ namespace PathCreation.Examples
                 Time.timeScale = 0;             
             }
 
-            if (!isGrounded && transform.position.x >= -140)
+            if (!isGrounded && transform.position.x >= -160 || !isGrounded && transform.position.x < -440)
             {
                 transform.rotation = Quaternion.Euler(0, 0, rot);
                 rot += rotOffset;
             }
 
-            if (transform.position.x >= -140)
+            if (transform.position.x >= -160 || transform.position.x < -440)
             {
+                SpaceShip.SetActive(false);
                 if (isGrounded)
                 {
                     particles.SetActive(true);
@@ -130,13 +129,6 @@ namespace PathCreation.Examples
                 SpaceShip.SetActive(true);
                 particles.SetActive(true);
             }
-
-            /*if (transform.position.x < -25)
-            {
-                Color sunColor = sun.color;
-                sun.color = Color.Lerp(sunColor, Color.red, Mathf.PingPong(Time.time, 150));
-                RenderSettings.skybox.SetColor("_Tint", Color.Lerp(sunColor, Color.red, Mathf.PingPong(Time.time, 150)));
-            }*/
 
         }
 
@@ -186,7 +178,7 @@ namespace PathCreation.Examples
         }
 
         void OnCollisionExit(Collision other) {
-            if (transform.position.x < -140)
+            if (transform.position.x < -160 && transform.position.x > -440)
             {
                 isGrounded = true;
             }

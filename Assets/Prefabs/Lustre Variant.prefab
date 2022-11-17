@@ -240,7 +240,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: bc6e37321310e4c4eb73fd97f0523f36,
         type: 3}
       propertyPath: m_Name
-      value: Spike
+      value: Lustre Variant
       objectReference: {fileID: 0}
     - target: {fileID: 1525910480733267460, guid: bc6e37321310e4c4eb73fd97f0523f36,
         type: 3}
@@ -348,7 +348,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5223875690956866823}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.76615983, y: 3.4701085, z: 1.4438578}
