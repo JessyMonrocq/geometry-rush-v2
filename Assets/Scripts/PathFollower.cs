@@ -123,14 +123,10 @@ namespace PathCreation.Examples
                 if (transform.position.x < -165 && transform.position.x > -460)
                 {
                     
-                    rb.mass = 0.07f;
-                    jumpAmount = 0.0001f;
                     isGrounded = true;
                 } else
                 {
                     
-                    rb.mass = 0.075f;
-                    jumpAmount = 0.025f;
                     isGrounded = false;
                 }
                 rb.AddForce(new Vector2(0, jumpForce), ForceMode.Impulse);
@@ -156,6 +152,8 @@ namespace PathCreation.Examples
             if (transform.position.x >= -165 || transform.position.x < -460)
             {
                 speed = 7;
+                rb.mass = 0.075f;
+                jumpAmount = 0.025f;
                 SpaceShip.SetActive(false);
                 if (isGrounded)
                 {
@@ -166,6 +164,8 @@ namespace PathCreation.Examples
                 }
             } else
             {
+                rb.mass = 0.07f;
+                jumpAmount = 0.0001f;
                 speed = 10;
                 SpaceShip.SetActive(true);
                 particles.SetActive(true);
