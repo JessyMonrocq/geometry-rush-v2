@@ -28,6 +28,7 @@ namespace PathCreation.Examples
         public float jumpForce;
         public GameObject particles;
         public GameObject Death;
+        public AudioSource DeathSound;
         public GameObject SpaceShip;
 
         public TextMeshPro nb;
@@ -48,6 +49,8 @@ namespace PathCreation.Examples
         public GameObject endPoint;
         public Vector3 GoToEndVector;
         public GameObject menuFin;
+
+        public float jumpMultiplier = 1.5f;
 
         void Start() {
             fini = false;
@@ -102,15 +105,15 @@ namespace PathCreation.Examples
             }
             
             if (Input.GetButton("Jump") && isGrounded && Time.timeScale == 1) {
-                if (transform.position.x < -160 && transform.position.x > -440)
+                if (transform.position.x < -165 && transform.position.x > -460)
                 {
-                    speed = 10;
+                    
                     rb.mass = 0.07f;
                     jumpAmount = 0.0001f;
                     isGrounded = true;
                 } else
                 {
-                    speed = 7;
+                    
                     rb.mass = 0.075f;
                     jumpAmount = 0.025f;
                     isGrounded = false;
@@ -129,14 +132,15 @@ namespace PathCreation.Examples
                 Time.timeScale = 0;             
             }
 
-            if (!isGrounded && transform.position.x >= -160 || !isGrounded && transform.position.x < -440)
+            if (!isGrounded && transform.position.x >= -165 || !isGrounded && transform.position.x < -460)
             {
                 transform.rotation = Quaternion.Euler(0, 0, rot);
                 rot += rotOffset;
             }
 
-            if (transform.position.x >= -160 || transform.position.x < -440)
+            if (transform.position.x >= -165 || transform.position.x < -460)
             {
+                speed = 7;
                 SpaceShip.SetActive(false);
                 if (isGrounded)
                 {
@@ -147,6 +151,7 @@ namespace PathCreation.Examples
                 }
             } else
             {
+                speed = 10;
                 SpaceShip.SetActive(true);
                 particles.SetActive(true);
             }
@@ -154,9 +159,9 @@ namespace PathCreation.Examples
             if (goToEndPoint)
             {
                 Rigidbody rb = GetComponent<Rigidbody>();
-                rb.MovePosition(this.transform.position + Time.deltaTime * GoToEndVector * endSpeed);
-
-                // this.transform.position += Time.deltaTime * GoToEndVector;
+                //rb.MovePosition(this.transform.position + Time.deltaTime * GoToEndVector * endSpeed);
+                isGrounded = false;
+                this.transform.position += Time.deltaTime * GoToEndVector * endSpeed;
 
                 endSpeed += Time.deltaTime;
                 // fais aller le cube dans la direction calculée
@@ -193,16 +198,20 @@ namespace PathCreation.Examples
 
         private IEnumerator OnTriggerEnter(Collider other)
         {
-            if (other.tag == "endPoint")
+            if (other.tag == "JumpPlatform")
+            {
+                jumpForce *= jumpMultiplier;
+                rb.AddForce(new Vector2(0, jumpForce), ForceMode.Impulse);
+                jumpForce /= jumpMultiplier;
+            }
+            else if (other.tag == "endPoint")
             {
                 Vector3 xCube = gameObject.transform.position;
                 Vector3 xEnd = endPoint.transform.position;
 
                 //calcul le vecteur direction
                 GoToEndVector = xEnd - xCube;
-
-                Debug.Log(GoToEndVector);
-
+                
                 GoToEndVector.Normalize();
                 //normalise le vecteur
                 goToEndPoint = true;
@@ -210,10 +219,10 @@ namespace PathCreation.Examples
                 this.GetComponent<Rigidbody>().isKinematic = true;
 
                 fini = true;
-                endPoint.GetComponent<AudioSource>().PlayDelayed(1);
             }
             else
             {
+                DeathSound.Play(0);
                 Death.SetActive(true);
                 Death.GetComponent<ParticleSystem>().Play();
                 pathCreator = null;
@@ -223,11 +232,11 @@ namespace PathCreation.Examples
                 rend.enabled = false;
                 collider.enabled = false;
                 rigidbody.constraints = RigidbodyConstraints.FreezePosition;
-                audioSync.SetActive(false);
                 nbEssais++;
                 SpaceShip.SetActive(false);
                 if(fini)
                 {
+                    goToEndPoint = false;
                     yield return new WaitForSeconds(3);
                     menuFin.SetActive(true);
                     menuFin.GetComponent<AudioSource>().Play(0);
@@ -235,6 +244,7 @@ namespace PathCreation.Examples
                     SceneManager.LoadScene("MainMenu");
                 } else
                 {
+                    audioSync.SetActive(false);
                     this.GetComponentInChildren<AudioSource>().Play(0);
                     yield return new WaitForSeconds(2);
                     rend.enabled = true;
@@ -258,7 +268,7 @@ namespace PathCreation.Examples
                 return;
             }
 
-            if (transform.position.x < -160 && transform.position.x > -440)
+            if (transform.position.x < -165 && transform.position.x > -460)
             {
                 isGrounded = true;
             }
