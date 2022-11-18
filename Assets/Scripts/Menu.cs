@@ -26,17 +26,17 @@ public class Menu : MonoBehaviour
         rotY += rotOffset;
     }
 
-    public IEnumerator Play()
+    public void Play()
     {
         play.Play(0);
-        yield return new WaitForSeconds(2);
+        
         SceneManager.LoadScene("MainLevel");
     }
 
-    public IEnumerator CloseGame()
+    public void CloseGame()
     {
         quit.Play(0);
-        yield return new WaitForSeconds(2);
         Application.Quit();
     }
+
 }

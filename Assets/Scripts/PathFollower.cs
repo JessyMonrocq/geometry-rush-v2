@@ -66,10 +66,9 @@ namespace PathCreation.Examples
             
         }
 
-        public IEnumerator PauseMenuDown()
+        public void PauseMenuDown()
         {
             continuer.GetComponent<AudioSource>().Play(0);
-            yield return new WaitForSeconds(2);
             essaisUI.SetActive(true);
             pauseMenu.SetActive(false);
             rightController.SetActive(false);
@@ -78,10 +77,15 @@ namespace PathCreation.Examples
             audioSync.GetComponent<AudioSource>().Play(0);
         }
 
-        public IEnumerator PauseMenuBack()
+        public void PauseMenuBack()
         {
+            essaisUI.SetActive(true);
+            pauseMenu.SetActive(false);
+            rightController.SetActive(false);
+            leftController.SetActive(false);
+            Time.timeScale = 1;
+            //audioSync.GetComponent<AudioSource>().Play(0);
             retour.GetComponent<AudioSource>().Play(0);
-            yield return new WaitForSeconds(2);
             SceneManager.LoadScene("MainMenu");
         }
 

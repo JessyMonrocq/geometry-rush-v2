@@ -252,7 +252,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1897273802}
+      - m_Target: {fileID: 1653267506}
         m_TargetAssemblyTypeName: Menu, Assembly-CSharp
         m_MethodName: CloseGame
         m_Mode: 1
@@ -1553,7 +1553,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1897273802}
+      - m_Target: {fileID: 1653267506}
         m_TargetAssemblyTypeName: Menu, Assembly-CSharp
         m_MethodName: Play
         m_Mode: 1
@@ -2179,6 +2179,7 @@ GameObject:
   - component: {fileID: 1653267504}
   - component: {fileID: 1653267503}
   - component: {fileID: 1653267502}
+  - component: {fileID: 1653267506}
   m_Layer: 0
   m_Name: Menu
   m_TagString: Untagged
@@ -2289,6 +2290,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1653267506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653267500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25747aa80cbb69e439c3d75fc868064a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  XR: {fileID: 1725982592}
+  rotOffset: 0.025
+  play: {fileID: 2130293367}
+  quit: {fileID: 1707144901}
 --- !u!1 &1707144899
 GameObject:
   m_ObjectHideFlags: 0
@@ -2897,7 +2914,6 @@ GameObject:
   - component: {fileID: 1897273801}
   - component: {fileID: 1897273800}
   - component: {fileID: 1897273799}
-  - component: {fileID: 1897273802}
   - component: {fileID: 1897273803}
   m_Layer: 0
   m_Name: EventSystem
@@ -2972,22 +2988,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1897273802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1897273798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25747aa80cbb69e439c3d75fc868064a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  XR: {fileID: 1725982592}
-  rotOffset: 0.025
-  play: {fileID: 2130293367}
-  quit: {fileID: 1707144901}
 --- !u!82 &1897273803
 AudioSource:
   m_ObjectHideFlags: 0
