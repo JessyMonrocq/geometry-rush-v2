@@ -12,13 +12,12 @@ public class Menu : MonoBehaviour
 
     public AudioSource play;
     public AudioSource quit;
-
-    private bool creditsOn;
+    public AudioSource cred;
 
     // Start is called before the first frame update
     void Start()
     {
-        creditsOn = false;
+
     }
 
     // Update is called once per frame
@@ -36,9 +35,8 @@ public class Menu : MonoBehaviour
 
     public void Credits()
     {
-        this.GetComponent<AudioSource>().Stop();
-        this.gameObject.SetActive(false);
-        creditsOn = true;
+        cred.Play(0);
+        SceneManager.LoadScene("Credits");
     }
 
     public void CloseGame()
