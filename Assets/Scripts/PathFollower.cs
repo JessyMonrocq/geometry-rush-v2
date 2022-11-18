@@ -52,12 +52,17 @@ namespace PathCreation.Examples
 
         public float jumpMultiplier = 1.5f;
 
+        public GameObject groundParticles;
+        public GameObject trail;
+
         void Start() {
             fini = false;
             SpaceShip.SetActive(false);
             rb.mass = 0.075f;
             Physics.gravity = new Vector3(0, -9.81F, 0);
             menuFin.SetActive(false);
+            trail.SetActive(false);
+            groundParticles.SetActive(false);
 
             pathCreator = PathCreator.FindObjectOfType<PathCreator>();
             if (pathCreator != null)
@@ -95,6 +100,16 @@ namespace PathCreation.Examples
         void Update()
         {
             jumpForce = Mathf.Sqrt(jumpAmount * -2 * (Physics.gravity.y * gravityScale));
+
+            if (isGrounded)
+            {
+                trail.SetActive(false);
+                groundParticles.SetActive(true);
+            }
+            else
+            {
+                groundParticles.SetActive(false);
+            }
 
             if (pathCreator != null)
             {
@@ -200,8 +215,10 @@ namespace PathCreation.Examples
         {
             if (other.tag == "JumpPlatform")
             {
+                isGrounded = false;
                 jumpForce *= jumpMultiplier;
                 rb.AddForce(new Vector2(0, jumpForce), ForceMode.Impulse);
+                trail.SetActive(true);
                 jumpForce /= jumpMultiplier;
             }
             else if (other.tag == "endPoint")
@@ -263,6 +280,11 @@ namespace PathCreation.Examples
         }
 
         void OnCollisionExit(Collision other) {
+            if(isGrounded)
+            {
+                trail.SetActive(false);
+            }
+
             if (goToEndPoint)
             {
                 return;
